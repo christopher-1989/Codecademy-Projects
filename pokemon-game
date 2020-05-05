@@ -1,22 +1,38 @@
-
-
 class Trainer:
-  def __init__(self, name, held_poke, potions, currently_active_number):
-    self.held_poke = held_poke
-    self.trainer_name = t_name
+  def __init__(self, trainer_name, held_pokemon, potions=None, active_pokemon_number=0):
+    self.held_pokemon = held_pokemon
+    self.trainer_name = trainer_name
     self.potions = potions
-    self.active = currently_active_number
-    self.pokemon = self.held_poke[self.active].name
+    self.active_number = active_pokemon_number
+    self.active_pokemon = self.held_pokemon[self.active_number]
+    self.active_pokemon_name = self.held_pokemon[self.active_number].name
+
   def potion(self):
-    statement = self.held_poke[self.active].heal_hp(20)
+    statement = self.held_pokemon[self.active_number].heal_hp(20)
     return statement
+
+  def attack(self, attacker, defender):
+    attacking_pokemon = attacker.held_pokemon[attacker.active_number]
+    defending_pokemon = defender.held_pokemon[defener.active_number]
+    damage = 1  #set damage multiplier
+    print(self.trainer_name + "'s " + attacker.active_pokemon_name + " attacked " + receiver.trainer_name + "'s " + receiving_pokemon.name)
+    if types_strong_against[self.typ] == receiving_pokemon.typ:
+      damage = 2*damage
+    weakness_list = types_weaknesses[self.typ]
+    for pokemon_type in weakness_list:
+        if pokemon_type == receiving_pokemon.typ:
+          damage = damage/2
+    return receiving_pokemon.lose_hp(self.level*damage)
+
   def fainted(self):
-    print("XXXX " + self.name.upper() + " HAS FAINTED. XXXX") 
+    print("XXXX " + player2.trainer_name + "'s " + self.name.upper() + " HAS FAINTED. XXXX") 
+    #distinguish between who is the trainer attacking and the opponent being attacked
     trainers_name = player1
     opponent_name = player2
-    opponent_name.held_poke[opponent_name.active].ko = True
+    #set the active pokemon's status to fainted
+    opponent_name.held_pokemon[opponent_name.active_number].ko = True
     #print(trainers_name.held_poke[trainers_name.active].ko)
-    opponent_name.active += 1
+    opponent_name.active_number += 1
     try:
       statement = opponent_name.held_poke[opponent_name.active].name + " is now the active Pokemon with " + str(opponent_name.held_poke[opponent_name.active].current_hp) + " HP"
     except:
@@ -32,14 +48,30 @@ class Trainer:
       #game_end = True
    # return statement
 
+  def move():
+    move_options = {
+     '1': None,
+     '2': Trainer.potion(trainer_1),
+     '3': Pokemon.revive(trainer_1.held_pokemon[-1]),
+     '4': None #end_game()
+     }
+    print("""
+Press 1 to attack
+      2 to give active pokemon a potion
+      3 to revive a pokemon
+      4 to run away
+""")
+    ask_for_move = input("What would you like to do? ")
+
 class Pokemon:
-  def __init__(self, name, level, typ, max_hp_factor, current_hp, ko=False):
+  def __init__(self, name, level, typ, max_hp, ko=False):
     self.name = name
     self.level = level
     self.typ = typ
-    self.max_hp = current_hp
-    self.current_hp = current_hp
+    self.max_hp = max_hp
+    self.current_hp = max_hp
     self.ko = ko
+
   def state_health(self):
     statement = self.name + " now has " + str(self.current_hp) + " health"
     return statement
@@ -52,7 +84,6 @@ class Pokemon:
       return statement 
     else:
       print("It failed because the pokemon isn't knocked out")
-      return
  
   def heal_hp(self, increase):
     new_current_hp = self.current_hp + increase
@@ -62,14 +93,7 @@ class Pokemon:
     else:
       self.current_hp = new_current_hp
       return Pokemon.state_health(self)
-  def attack(self, attacker_pokemon):
-    damage = 1
-    print(player1.name + "'s " + self.name + " attacked " + player2.name + "'s " + attacker_pokemon.name)
-    if types_strong_against[self.typ] == attacker_pokemon.typ:
-      damage = 2*damage
-    elif types_weaknesses[self.typ] == attacker_pokemon.typ:
-      damage = damage/2
-    return attacker_pokemon.lose_hp(self.level*damage)
+    
   def lose_hp(self, decrease):
     new_current_hp = self.current_hp - decrease
     if new_current_hp <=0:
@@ -78,56 +102,43 @@ class Pokemon:
     else:
       self.current_hp = new_current_hp
       return Pokemon.state_health(self)
-  
-def endgame(players):
-  for player in players:
-    for i in player.held_poke:
-      if i.ko == False:
-        return False
-  return True
-types_weaknesses = {"Fire": "Water",
-                "Water": "Grass",
-                "Grass": "Fire"}
+
+types_weaknesses = {"Fire": ["Water", "Fire"],
+                "Water": ["Grass", "Water"],
+                "Grass": ["Fire", "Grass"]}
 types_strong_against = {"Fire": "Grass",
                 "Water": "Fire",
                 "Grass": "Water"}
-charmander = Pokemon("Charmander", 5, "Fire", 4, 20)
-squirtle = Pokemon("Squirtle", 5, "Water", 4, 30)
-bulbasaur = Pokemon("Bulbasaur", 5, "Grass", 4, 19)
-char1 = charmander
-char2 = charmander
-bulb1 = bulbasaur
-bulb2 = bulbasaur
-squirt1 = squirtle
-squirt2 = squirtle
-mekka = Trainer("Mekka", [squirt1, squirt2], 4, 0)
-hanna = Trainer("HANNA", [bulb1, bulb2], 4, 0)
+#instantiate the different pokemon
+charmander = Pokemon("Charmander", 5, "Fire", 20)
+squirtle = Pokemon("Squirtle", 5, "Water", 30)
+bulbasaur = Pokemon("Bulbasaur", 5, "Grass", 19)
+charmander_1 = charmander
+charmander_2 = Pokemon("Charmander", 5, "Fire", 20)
+#instantiate the two trainers
+trainer_1 = Trainer("Trainer 1", [charmander_1], 4, 0)
+trainer_2 = Trainer("Trainer 2", [charmander_2], 4, 0)
 
-
-players = [mekka, hanna]
-
-num = 0
-turn = 1
-for player in players: #list the players and their pokemon
+players = [trainer_1, trainer_2]
+#list the players and their pokemon
+for player in players: 
   starting_list = []
-  for pokemon in player.held_poke:
+  for pokemon in player.held_pokemon:
     starting_list.append(pokemon.name)
-  print(player.name + " has " + ", ".join(starting_list))
-print("Round number: ", turn)
-while num < 20:
-  if num > 1 and num % 2 == 0: #count number of turns
-    turn += 1
-    print("Round number: ", turn)
-  test = num%2 
-  if test == 0: #change who is attacking. 0 is attacker, 1 is being attacked
-    player1 = players[0]
-    player2 = players[1]
-  else:
-    player1 = players[1]
-    player2 = players[0]
-    #print(player1.active, player2.active)
-  print(Pokemon.attack(player1.held_poke[player1.active], player2.held_poke[player2.active]))
-  num+=1
+  print(player.trainer_name + " has " + ", ".join(starting_list))
+turn = 1
+
+while turn < 10:
+  print("Round number: ", turn)
+  #player 1 is attacker and computer is defender
+  attacker = trainer_1
+  defender = trainer_2
+  trainer_move = Trainer.move()
+  #Computer is attacker and player 1 is defender
+  attacker = trainer_2
+  defender = trainer_1
+  Trainer.attack(attacker, defender.held_pokemon[player1.active_number])
+  turn+=1
 
 
   
