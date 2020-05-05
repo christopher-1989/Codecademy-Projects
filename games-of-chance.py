@@ -52,7 +52,7 @@ def get_prediction():
             prediction = input("Press 'H' for 'Heads' or 'T' for 'Tails': ").upper()
 
 def play_coin_flip():
-    print("You are betting on a coin toss." )
+    print("You have $ " + str(money) + " and are betting on a coin toss." )
     bet = get_bet(money)
     prediction = get_prediction()
     result = coin_flip(prediction)
@@ -104,9 +104,8 @@ Kings have a value of 13.
 """)
     bet = get_bet(money)
     cards = [i for i in range(1, 14)]
-    for i in range(1, 4):
-        for j in range(1, 14):
-            cards.append(j)
+    for j in range(1, 14):
+        cards.append(j)
     cards.sort()
     number_of_cards = len(cards)
     first_players_card = cards.pop(random.randint(1, number_of_cards-1))
